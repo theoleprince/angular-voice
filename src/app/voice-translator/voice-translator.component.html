@@ -1,0 +1,9 @@
+<div class="voice-translator">
+  <!-- Bouton pour démarrer/arrêter l'enregistrement -->
+  <button (click)="toggleRecording()" class="microphone-button">
+    {{ isRecording ? 'Arrêter' : 'Parler' }}
+  </button>
+
+  <!-- Section pour lire l'audio traduit -->
+  <audio #translatedAudio controls></audio>
+</div>
