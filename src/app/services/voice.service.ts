@@ -13,26 +13,33 @@ export class VoiceService {
   private audioChunks: Blob[] = [];
   private intervalId: any;
 
-  constructor() {}
+  constructor() { }
 
   // Démarre l'enregistrement audio
   async startRecording(): Promise<void> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.mediaRecorder = new (window as any).MediaRecorder(stream); // Utilisation de casting pour éviter les erreurs de types
+
+      // Vérifiez si le type MIME 'audio/webm' est supporté
+      console.log(`Vérifiez si le type MIME 'audio/webm' est supporté`);
+      const mimeType = 'audio/webm';
+      if (!(window as any).MediaRecorder.isTypeSupported(mimeType)) {
+        console.error(`${mimeType} n'est pas supporté`);
+        return;
+      }
+      console.log(`${mimeType}`);
+      this.mediaRecorder = new (window as any).MediaRecorder(stream, { mimeType });
 
       this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
         this.audioChunks.push(event.data);
-      };
-
-      this.mediaRecorder.onstop = () => {
-        // Actions après arrêt, si nécessaire
       };
 
       this.mediaRecorder.start();
 
       // Enregistrement en segments de 10 secondes
       this.intervalId = setInterval(() => {
+        console.log('theo');
+        console.log(this.mediaRecorder);
         this.stopAndSendAudio();
       }, 10000); // 10 secondes
 
@@ -60,9 +67,15 @@ export class VoiceService {
         const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
         this.audioChunks = []; // Réinitialise les morceaux après envoi
 
-        // Redémarre l'enregistrement après une courte pause
-        this.mediaRecorder?.start();
+        // Attendre un instant avant de redémarrer pour éviter les conflits
+        setTimeout(() => {
+          console.log(this.mediaRecorder);
+          if (this.mediaRecorder && this.mediaRecorder.state === 'inactive') {
+            this.mediaRecorder.start();
+          }
+        }, 100); // Délai court avant redémarrage
       };
     }
   }
+
 }
