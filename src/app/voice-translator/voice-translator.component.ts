@@ -21,6 +21,7 @@ export class VoiceTranslatorComponent {
     });
   }
 
+
   // tslint:disable-next-line:typedef
   toggleRecording() {
     if (this.isRecording) {
