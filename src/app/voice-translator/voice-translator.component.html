@@ -7,3 +7,5 @@
   <!-- Section pour lire l'audio traduit -->
   <audio #translatedAudio controls></audio>
 </div>
+
+<textarea  [(ngModel)]="inputValue"  (keydown)="handleKeyDown($event)" rows="5" cols="40"></textarea>

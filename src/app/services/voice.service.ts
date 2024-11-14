@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 interface BlobEvent extends Event {
   readonly data: Blob;
@@ -13,21 +14,22 @@ export class VoiceService {
   private audioChunks: Blob[] = [];
   private intervalId: any;
 
+  // Subject pour émettre l'audio enregistré
+  private audioSubject = new Subject<Blob>();
+
+  // Observable auquel le composant peut s'abonner
+  audio$ = this.audioSubject.asObservable();
+
   constructor() { }
 
-  // Démarre l'enregistrement audio
   async startRecording(): Promise<void> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // Vérifiez si le type MIME 'audio/webm' est supporté
-      console.log(`Vérifiez si le type MIME 'audio/webm' est supporté`);
       const mimeType = 'audio/webm';
       if (!(window as any).MediaRecorder.isTypeSupported(mimeType)) {
         console.error(`${mimeType} n'est pas supporté`);
         return;
       }
-      console.log(`${mimeType}`);
       this.mediaRecorder = new (window as any).MediaRecorder(stream, { mimeType });
 
       this.mediaRecorder.ondataavailable = (event: BlobEvent) => {
@@ -38,17 +40,14 @@ export class VoiceService {
 
       // Enregistrement en segments de 10 secondes
       this.intervalId = setInterval(() => {
-        console.log('theo');
-        console.log(this.mediaRecorder);
         this.stopAndSendAudio();
-      }, 10000); // 10 secondes
+      }, 10000);
 
     } catch (error) {
       console.error('Erreur lors de la capture audio:', error);
     }
   }
 
-  // Arrête l'enregistrement et nettoie l'intervalle
   stopRecording(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -58,7 +57,6 @@ export class VoiceService {
     }
   }
 
-  // Arrête temporairement, envoie l'audio, puis redémarre l'enregistrement
   private stopAndSendAudio(): void {
     if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
       this.mediaRecorder.stop();
@@ -67,15 +65,16 @@ export class VoiceService {
         const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
         this.audioChunks = []; // Réinitialise les morceaux après envoi
 
-        // Attendre un instant avant de redémarrer pour éviter les conflits
+        // Émet l’audio enregistré
+        this.audioSubject.next(audioBlob);
+
+        // Redémarre l'enregistrement après une courte pause
         setTimeout(() => {
-          console.log(this.mediaRecorder);
           if (this.mediaRecorder && this.mediaRecorder.state === 'inactive') {
             this.mediaRecorder.start();
           }
-        }, 100); // Délai court avant redémarrage
+        }, 100);
       };
     }
   }
-
 }
