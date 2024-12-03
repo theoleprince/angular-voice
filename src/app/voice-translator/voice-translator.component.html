@@ -4,6 +4,9 @@
     {{ isRecording ? 'Arrêter' : 'Parler' }}
   </button>
 
+  <div *ngIf="isRecording" class="timer">
+    Temps d'enregistrement : {{ timerMinutes }}:{{ timerSeconds | number: '2.0-0' }}
+  </div>
   <!-- Section pour lire l'audio traduit -->
   <audio #translatedAudio controls></audio>
 </div>

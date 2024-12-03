@@ -10,8 +10,11 @@ import { VoiceService } from '../services/voice.service';
 export class VoiceTranslatorComponent {
   @ViewChild('translatedAudio', { static: true }) translatedAudio: ElementRef<HTMLAudioElement>;
   isRecording = false;
-  // Variable pour stocker la valeur du champ
+  timer: any; // Référence au minuteur
+  timerSeconds = 0; // Secondes écoulées
+  timerMinutes = 0; // Minutes écoulées
   inputValue: string = '';
+
   constructor(
     private voiceService: VoiceService,
     private translationService: TranslationService
@@ -21,18 +24,35 @@ export class VoiceTranslatorComponent {
     });
   }
 
-
-  // tslint:disable-next-line:typedef
   toggleRecording() {
     if (this.isRecording) {
+      this.stopTimer();
       this.voiceService.stopRecording();
     } else {
+      this.startTimer();
       this.voiceService.startRecording();
     }
     this.isRecording = !this.isRecording;
   }
 
-  // tslint:disable-next-line:typedef
+  // Méthode pour démarrer le minuteur
+  startTimer() {
+    this.timerSeconds = 0;
+    this.timerMinutes = 0;
+    this.timer = setInterval(() => {
+      this.timerSeconds++;
+      if (this.timerSeconds >= 60) {
+        this.timerMinutes++;
+        this.timerSeconds = 0;
+      }
+    }, 1000);
+  }
+
+  // Méthode pour arrêter le minuteur
+  stopTimer() {
+    clearInterval(this.timer);
+  }
+
   onAudioAvailable(audioBlob: Blob) {
     this.translationService.translateAudio(audioBlob).subscribe(translatedAudioBlob => {
       const audioUrl = URL.createObjectURL(translatedAudioBlob);
@@ -41,39 +61,25 @@ export class VoiceTranslatorComponent {
     });
   }
 
-   // tslint:disable-next-line:typedef
-   onAudioAvailableTest(audioBlob: Blob) {
-    // Crée un URL pour le Blob audio reçu
+  onAudioAvailableTest(audioBlob: Blob) {
     const audioUrl = URL.createObjectURL(audioBlob);
-
-    // Définit la source du lecteur audio sur l'URL générée et joue l'audio
     this.translatedAudio.nativeElement.src = audioUrl;
     this.translatedAudio.nativeElement.play();
   }
 
-
-
-
-
   handleKeyDown(event: KeyboardEvent): void {
-    // Vérifier si la touche Enter est pressée
     if (event.key === 'Enter') {
-      // Si Shift est aussi pressé, on ajoute un retour à la ligne
       if (event.shiftKey) {
-        // Permettre à l'utilisateur de passer à la ligne dans le textarea
-        return; // Ne pas empêcher l'action par défaut (retour à la ligne)
+        return;
       } else {
-        // Sinon, on envoie la valeur saisie
         this.sendInputValue();
-        event.preventDefault(); // Empêche le comportement par défaut (saut de ligne)
+        event.preventDefault();
       }
     }
   }
 
   sendInputValue(): void {
-    // Logique pour envoyer la valeur saisie
     console.log('Valeur saisie:', this.inputValue);
-    // Vous pouvez envoyer cette valeur à un service ou faire une autre action
-    this.inputValue = ''; // Réinitialiser si nécessaire
+    this.inputValue = '';
   }
 }
