@@ -8,11 +8,13 @@ import { VoiceService } from '../services/voice.service';
   styleUrls: ['./voice-translator.component.css']
 })
 export class VoiceTranslatorComponent {
-  @ViewChild('translatedAudio', { static: true }) translatedAudio: ElementRef<HTMLAudioElement>;
+  @ViewChild('translatedAudioSender', { static: true }) translatedAudioSender: ElementRef<HTMLAudioElement>;
+  @ViewChild('translatedAudioReceiver', { static: true }) translatedAudioReceiver: ElementRef<HTMLAudioElement>;
+
   isRecording = false;
-  timer: any; // Référence au minuteur
-  timerSeconds = 0; // Secondes écoulées
-  timerMinutes = 0; // Minutes écoulées
+  timer: any;
+  timerSeconds = 0;
+  timerMinutes = 0;
   inputValue: string = '';
 
   constructor(
@@ -20,7 +22,7 @@ export class VoiceTranslatorComponent {
     private translationService: TranslationService
   ) {
     this.voiceService.audio$.subscribe(audioBlob => {
-      this.onAudioAvailableTest(audioBlob);
+      this.onAudioAvailableForSender(audioBlob);
     });
   }
 
@@ -35,7 +37,6 @@ export class VoiceTranslatorComponent {
     this.isRecording = !this.isRecording;
   }
 
-  // Méthode pour démarrer le minuteur
   startTimer() {
     this.timerSeconds = 0;
     this.timerMinutes = 0;
@@ -48,23 +49,20 @@ export class VoiceTranslatorComponent {
     }, 1000);
   }
 
-  // Méthode pour arrêter le minuteur
   stopTimer() {
     clearInterval(this.timer);
   }
 
-  onAudioAvailable(audioBlob: Blob) {
-    this.translationService.translateAudio(audioBlob).subscribe(translatedAudioBlob => {
-      const audioUrl = URL.createObjectURL(translatedAudioBlob);
-      this.translatedAudio.nativeElement.src = audioUrl;
-      this.translatedAudio.nativeElement.play();
-    });
+  onAudioAvailableForSender(audioBlob: Blob) {
+    const audioUrl = URL.createObjectURL(audioBlob);
+    this.translatedAudioSender.nativeElement.src = audioUrl;
+    this.translatedAudioSender.nativeElement.play();
   }
 
-  onAudioAvailableTest(audioBlob: Blob) {
+  onAudioAvailableForReceiver(audioBlob: Blob) {
     const audioUrl = URL.createObjectURL(audioBlob);
-    this.translatedAudio.nativeElement.src = audioUrl;
-    this.translatedAudio.nativeElement.play();
+    this.translatedAudioReceiver.nativeElement.src = audioUrl;
+    this.translatedAudioReceiver.nativeElement.play();
   }
 
   handleKeyDown(event: KeyboardEvent): void {
