@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import { AppRoutes } from './app-routing.module';
 import { PaymentMoneyComponent } from './payment-money/payment-money.component';
 import { StatutPaymentComponent } from './payment-money/statut-payment/statut-payment.component';
+import { LicenseComponent } from './license/license.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { StatutPaymentComponent } from './payment-money/statut-payment/statut-pa
     SuccessComponent,
     CancelComponent,
     PaymentMoneyComponent,
-    StatutPaymentComponent
+    StatutPaymentComponent,
+    LicenseComponent
   ],
     imports: [
         BrowserModule,
