@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="status-box" [class.loading]="loading">
+    <div class="spinner" *ngIf="loading"></div>
+    <div *ngIf="!loading">
+      <h1>{{ statusMessage }}</h1>
+      <p *ngIf="paymentData">Montant : {{ paymentData.amount }} FCFA</p>
+      <p *ngIf="paymentData">Description : {{ paymentData.inittxnmessage }}</p>
+      <p *ngIf="paymentData">Message : {{ paymentData.confirmtxnmessage }}</p>
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>

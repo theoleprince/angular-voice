@@ -1,0 +1,19 @@
+<div>
+  <h2>Orange Money Payment</h2>
+  <form (ngSubmit)="makePayment()">
+    <label for="subscriberMsisdn">Payer's Phone:</label>
+    <input id="subscriberMsisdn" [(ngModel)]="paymentData.subscriberMsisdn" name="subscriberMsisdn" required />
+
+    <label for="amount">Amount:</label>
+    <input id="amount" [(ngModel)]="paymentData.amount" name="amount" required />
+
+    <label for="orderId">Order ID:</label>
+    <input id="orderId" [(ngModel)]="paymentData.orderId" name="orderId" required />
+
+    <label for="description">Description:</label>
+    <input id="description" [(ngModel)]="paymentData.description" name="description" />
+
+    <button type="submit">Pay</button>
+  </form>
+  <p style="color: red;">{{statusMessage}}</p>
+</div>

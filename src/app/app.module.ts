@@ -10,6 +10,8 @@ import { SuccessComponent } from './success/success.component';
 import { CancelComponent } from './cancel/cancel.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutes } from './app-routing.module';
+import { PaymentMoneyComponent } from './payment-money/payment-money.component';
+import { StatutPaymentComponent } from './payment-money/statut-payment/statut-payment.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { AppRoutes } from './app-routing.module';
     VoiceTranslatorComponent,
     PaymentComponent,
     SuccessComponent,
-    CancelComponent
+    CancelComponent,
+    PaymentMoneyComponent,
+    StatutPaymentComponent
   ],
     imports: [
         BrowserModule,
